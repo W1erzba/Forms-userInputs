@@ -17,13 +17,15 @@ const SimpleInput = (props) => {
 		valueChangeHandler: emailChangeHandler,
 		inputBlurHandler: emailBlurHandler,
 		reset: resetEmailInput,
-	} = useInput((value) => value.trim() !== '' && value.includes('@'));
+	} = useInput((value) => value.includes('@'));
 
 	let formIsValid = false;
+
 	if (enteredNameIsValid && enteredEmailIsValid) formIsValid = true;
 
 	const formSubmissionHandler = (event) => {
 		event.preventDefault();
+
 		console.log(enteredEmail, enteredName);
 
 		resetNameInput();
