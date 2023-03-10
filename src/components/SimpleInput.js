@@ -1,15 +1,45 @@
+import { useRef, useState } from 'react';
+
 const SimpleInput = (props) => {
-  return (
-    <form>
-      <div className='form-control'>
-        <label htmlFor='name'>Your Name</label>
-        <input type='text' id='name' />
-      </div>
-      <div className="form-actions">
-        <button>Submit</button>
-      </div>
-    </form>
-  );
+	const nameInputRef = useRef();
+	const [enteredName, setEnteredName] = useState('');
+
+	const nameInputChangeHandler = (event) => {
+		setEnteredName(event.target.value);
+	};
+
+	const formSubmissionHandler = (event) => {
+		event.preventDefault();
+
+		console.log(enteredName);
+
+		const enterdValue = nameInputRef.current.value;
+		console.log(enterdValue);
+
+		nameInputRef.current.value = ''; // it works but its not ideal because of directly manipulating a dom. And this is React role not our.
+
+		setEnteredName(''); // this is the way to reset input via React
+	};
+
+	return (
+		<form onSubmit={formSubmissionHandler}>
+			<div className='form-control'>
+				<label htmlFor='name'>Your Name</label>
+				<input
+					ref={nameInputRef}
+					type='text'
+					id='name'
+					onChange={nameInputChangeHandler}
+					value={enteredName}
+				/>
+			</div>
+			<div className='form-actions'>
+				<button>Submit</button>
+			</div>
+		</form>
+	);
 };
 
 export default SimpleInput;
+
+// Side note: it's better to use useRef when u wan't to simply get value from form validation so there is no need to update it on a every keystroke. However if you need for eg. check every letter that user is typing to validate his password or something like that, it would be better to use useState to have full controle over the input updates. useState is also your choice when you want to reset form input after subbmition by just adding an setName('') on the end of the handler. With useRef it's impossible to do that.
