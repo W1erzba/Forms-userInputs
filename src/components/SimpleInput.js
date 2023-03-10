@@ -1,54 +1,40 @@
-import { useState } from 'react';
+import useInput from '../hooks/use-input';
 
 const SimpleInput = (props) => {
-	const [enteredName, setEnteredName] = useState('');
-	const [enteredNameTouched, setEnteredNameTouched] = useState(false);
+	const {
+		value: enteredName,
+		hasError: nameInputHasError,
+		isValid: enteredNameIsValid,
+		valueChangeHandler: nameChangeHandler,
+		inputBlurHandler: nameBlurHandler,
+		reset: resetNameInput,
+	} = useInput((value) => value.trim() !== '');
 
-	const [enteredEmail, setEnteredEmail] = useState('');
-	const [enteredEmailTouched, setEnteredEmailTouched] = useState(false);
-
-	const enteredNameIsValid = enteredName.trim() !== '';
-	const nameInputIsInvalid = !enteredNameIsValid && enteredNameTouched;
-
-	const enteredEmailIsValid =
-		enteredEmail.trim() !== '' && enteredEmail.includes('@');
-	const emialInputIsInvalid = !enteredEmailIsValid && enteredEmailTouched;
+	const {
+		value: enteredEmail,
+		hasError: emailInputHasError,
+		isValid: enteredEmailIsValid,
+		valueChangeHandler: emailChangeHandler,
+		inputBlurHandler: emailBlurHandler,
+		reset: resetEmailInput,
+	} = useInput((value) => value.trim() !== '' && value.includes('@'));
 
 	let formIsValid = false;
 	if (enteredNameIsValid && enteredEmailIsValid) formIsValid = true;
 
-	const nameInputChangeHandler = (event) => {
-		setEnteredName(event.target.value);
-	};
-
-	const nameInputBlurHandler = (event) => {
-		setEnteredNameTouched(true);
-	};
-
-	const emailInputChangeHandler = (event) => {
-		setEnteredEmail(event.target.value);
-	};
-
-	const emailInputBlurHandler = (event) => {
-		setEnteredEmailTouched(true);
-	};
-
 	const formSubmissionHandler = (event) => {
 		event.preventDefault();
-
 		console.log(enteredEmail, enteredName);
 
-		setEnteredName('');
-		setEnteredEmail('');
-		setEnteredNameTouched(false);
-		setEnteredEmailTouched(false);
+		resetNameInput();
+		resetEmailInput();
 	};
 
-	const nameInputClasses = nameInputIsInvalid
+	const nameInputClasses = nameInputHasError
 		? 'form-control invalid'
 		: 'form-control';
 
-	const emailInputClasses = emialInputIsInvalid
+	const emailInputClasses = emailInputHasError
 		? 'form-control invalid'
 		: 'form-control';
 
@@ -59,11 +45,11 @@ const SimpleInput = (props) => {
 				<input
 					type='text'
 					id='name'
-					onChange={nameInputChangeHandler}
-					onBlur={nameInputBlurHandler}
+					onChange={nameChangeHandler}
+					onBlur={nameBlurHandler}
 					value={enteredName}
 				/>
-				{nameInputIsInvalid && (
+				{nameInputHasError && (
 					<p className='error-text'>Name must not be empty. 😶‍🌫️</p>
 				)}
 			</div>
@@ -72,11 +58,11 @@ const SimpleInput = (props) => {
 				<input
 					type='email'
 					id='email'
-					onChange={emailInputChangeHandler}
-					onBlur={emailInputBlurHandler}
+					onChange={emailChangeHandler}
+					onBlur={emailBlurHandler}
 					value={enteredEmail}
 				/>
-				{emialInputIsInvalid && (
+				{emailInputHasError && (
 					<p className='error-text'>
 						email adres needs include '@' and can't be empty. 😶‍🌫️
 					</p>
@@ -90,5 +76,3 @@ const SimpleInput = (props) => {
 };
 
 export default SimpleInput;
-
-// Side note: it's better to use useRef when u wan't to simply get value from form validation so there is no need to update it on a every keystroke. However if you need for eg. check every letter that user is typing to validate his password or something like that, it would be better to use useState to have full controle over the input updates. useState is also your choice when you want to reset form input after subbmition by just adding an setName('') on the end of the handler. With useRef it's impossible to do that.
